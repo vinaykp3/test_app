@@ -22,4 +22,39 @@ describe UsersController do
     end
   end
 
+  describe "POST 'create'" do
+    describe "signup failure" do
+      before(:each) do
+        @attr= {:name=>"",:email=>"",:password=>"",:password_confirmation=>""}
+      end
+
+      it "should not create an user" do
+        lambda do
+          post :create, :user=>@attr
+        end.should_not change(User, :count)
+      end
+      it "should redirect to signup page" do
+        post :create, :user =>@attr
+        response.should render_template('new')
+      end
+    end
+
+    describe "signup success" do
+      before(:each) do
+        @attr ={:name=>"Name",:email=>"user@example.com",:password=>"foobar",:password_confirmation=>"foobar"}
+      end
+
+      it "should create an user" do
+        lambda do
+          post :create, :user=>@attr
+        end.should change(User,:count).by(1)
+      end
+
+      it "should redirect to user page" do
+        post :create, :user=>@attr
+        response.should redirect_to(user_path(assigns(:user)))
+      end
+    end
+  end
+
 end
